@@ -1,15 +1,5 @@
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
-
-console.log("Database URL:", process.env.DATABASE_URL);
-
-const prisma = new PrismaClient({
-  datasources: {
-    db: {
-      url: process.env.DATABASE_URL, // Accessing DATABASE_URL
-    },
-  },
-});
+import prisma from "@/lib/prisma";
 
 // GET all contacts
 export async function GET() {
@@ -26,35 +16,16 @@ export async function GET() {
 
 // POST a new contact
 export async function POST(request: Request) {
-  const { name, email } = await request.json();
+  const data = await request.json();
+  console.log("Received data:", data);
+  const { name, email, phone, address } = data;
+
   try {
     const newContact = await prisma.contact.create({
-      data: {
-        name,
-        email,
-      },
+      data: { name, email, phone, address },
     });
     return NextResponse.json(newContact);
   } catch (error) {
-    return NextResponse.json(
-      { error: "Failed to create contact" },
-      { status: 500 }
-    );
-  }
-}
-
-// DELETE a contact by ID
-export async function DELETE(request: Request) {
-  const { id } = await request.json();
-  try {
-    await prisma.contact.delete({
-      where: { id },
-    });
-    return NextResponse.json({ message: "Contact deleted successfully" });
-  } catch (error) {
-    return NextResponse.json(
-      { error: "Failed to delete contact" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error }, { status: 500 });
   }
 }

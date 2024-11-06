@@ -1,21 +1,32 @@
-import { List, ListItem, ListItemText } from "@mui/material";
+import { List, ListItem, ListItemText, Divider } from "@mui/material";
 
 interface Contact {
+  id: string;
   name: string;
   email: string;
+  phone?: string;
+  address?: string;
+  favorite?: boolean;
 }
 
 interface ContactListProps {
   contacts: Contact[];
+  onSelect: (contact: Contact) => void;
 }
 
-export default function ContactList({ contacts }: ContactListProps) {
+export default function ContactList({ contacts, onSelect }: ContactListProps) {
   return (
-    <List>
-      {contacts.map((contact, index) => (
-        <ListItem key={index} divider>
-          <ListItemText primary={contact.name} secondary={contact.email} />
-        </ListItem>
+    <List className="mt-10">
+      {contacts.map((contact) => (
+        <div key={contact.id}>
+          <ListItem
+            className="cursor-pointer text-gray-500"
+            onClick={() => onSelect(contact)}
+          >
+            <ListItemText primary={contact.name} />
+          </ListItem>
+          <Divider />
+        </div>
       ))}
     </List>
   );
